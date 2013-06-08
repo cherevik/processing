@@ -1,10 +1,16 @@
 float CELLSIZE = 20.0;
 float HEIGHT = 20; 
 float WIDTH = 10;
+float INFOPANEL_HEIGHT = 50;
+
+PFont f = createFont("Arial",16,true);
+
 
 /*-------------------- BOARD -----------------*/
 class Board {
   int [][] pile; 
+  int linesCompleted; 
+  int points; 
  
   Board() {
     this.pile = new int[(int)WIDTH][(int)HEIGHT];
@@ -12,11 +18,17 @@ class Board {
   }
   
   void clear() {
+    this.points = 0; 
+    this.linesCompleted = 0; 
     for (int i = 0; i < WIDTH; i ++) {
       for (int j = 0; j < HEIGHT; j ++) {
         this.pile[i][j] = 0; 
       }  
     }
+  }
+  
+  void updateScore(int iterations) {
+    this.points += ((21 + (3 * this.getEarnedLevel())) - iterations);
   }
   
   void draw() {
@@ -30,7 +42,15 @@ class Board {
           rect(x, y, CELLSIZE, CELLSIZE);
         }     
       }
-    }   
+    }  
+    rectMode(CORNER);
+    fill(72, 100, 247);
+    rect(0, HEIGHT*CELLSIZE, WIDTH*CELLSIZE, INFOPANEL_HEIGHT);  
+    
+    textFont(f, 16); 
+    fill(255); 
+    text("Level: " + this.getEarnedLevel() + 
+      "    Score: " + this.points, 10, HEIGHT * CELLSIZE + 32); 
   }
 
   void compactPile() {
@@ -43,6 +63,7 @@ class Board {
       }  
       if (filled) {
         // remove this row 
+        this.linesCompleted ++; 
         for (int k = 0; k < WIDTH; k ++) {
           for (int l = i; l > 0; l --) {
              this.pile[k][l] = this.pile[k][l-1];
@@ -62,6 +83,18 @@ class Board {
   
   void occupy(int x, int y) {
     this.pile[x][y] = 1;
+  }
+  
+  int getEarnedLevel() {
+    int earnedLevel = 1;
+    if (this.linesCompleted <= 0){
+      earnedLevel = 1;
+    } else if ((this.linesCompleted >= 1) && (this.linesCompleted <= 90)) {
+      earnedLevel = 1 + ((this.linesCompleted - 1) / 10);
+    } else if (linesCompleted >= 91) {
+      earnedLevel = 10;
+    }
+    return earnedLevel;  
   }
 }
 
@@ -296,14 +329,14 @@ Shape spawn() {
    return piece; 
 }
 
-
-int level = 0; 
 long countdown = 0;
 Shape active_piece = null;
 long ts; 
 
+int freeFallIterations = 0; 
+
 void setup() {
-  size(200, 400); 
+  size(round(WIDTH*CELLSIZE), round(HEIGHT*CELLSIZE + INFOPANEL_HEIGHT)); 
   background(0);
   ts = millis();
   board.clear(); 
@@ -322,7 +355,8 @@ void draw() {
   if (countdown > 0) {
     return; 
   }
-  countdown = 50 * (11-level);
+  freeFallIterations ++; 
+  countdown = 50 * (11-board.getEarnedLevel());
   if (active_piece == null) {
     active_piece = spawn();  
   }
@@ -332,6 +366,8 @@ void draw() {
     active_piece.addToPile();
     active_piece = null;
     board.compactPile();
+    board.updateScore(freeFallIterations);     
+    freeFallIterations = 0;
   }
 }
 
@@ -354,6 +390,8 @@ void keyPressed() {
       active_piece.addToPile();
       active_piece = null;
       board.compactPile();
+      board.updateScore(freeFallIterations);     
+      freeFallIterations = 0;
       break; 
   }    
 }
