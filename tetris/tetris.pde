@@ -1,10 +1,15 @@
-float CELLSIZE = 20.0;
+float CELLSIZE = 30.0;
 float HEIGHT = 20; 
 float WIDTH = 10;
 float INFOPANEL_HEIGHT = 50;
 
 PFont f = createFont("Arial",16,true);
 
+void rotate2D(PVector v, float theta) {
+  float xTemp = v.x;
+  v.x = v.x*cos(theta) - v.y*sin(theta);
+  v.y = xTemp*sin(theta) + v.y*cos(theta);
+}
 
 /*-------------------- BOARD -----------------*/
 class Board {
@@ -28,7 +33,7 @@ class Board {
   }
   
   void updateScore(int iterations) {
-    this.points += ((21 + (3 * this.getEarnedLevel())) - iterations);
+    this.points += round((21 + (3 * this.getEarnedLevel())) - iterations);
   }
   
   void draw() {
@@ -168,7 +173,7 @@ class Shape {
     for (int i = 0; i < this.blocks.length; i ++) {
       PVector block = this.blocks[i]; 
       PVector test = new PVector(block.x, block.y); 
-      test.rotate(this.angles[st]);
+      rotate2D(test, this.angles[st]);
       test.add(pos); 
       int x = round(test.x); 
       int y = round(test.y);
@@ -190,7 +195,7 @@ class Shape {
     for (int i = 0; i < this.blocks.length; i ++) {
       PVector block = this.blocks[i]; 
       PVector test = new PVector(block.x, block.y); 
-      test.rotate(this.angles[this.state]);
+      rotate2D(test, this.angles[this.state]);
       test.add(this.position); 
       int x = round(test.x); 
       int y = round(test.y);
