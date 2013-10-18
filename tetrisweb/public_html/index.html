@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tetris Web</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <link href="css/tetris.css" type="text/css" rel="stylesheet"/>
+        <script src="js/processing-1.4.1.min.js"></script>  
+        <script src="js/utils.js"></script>  
+        <script> 
+            var highestScore = 0;
+            var username = '';
+            function onload() {
+                var name = getCookie("username");
+                if (name) {
+                    username = name; 
+                    beginPlaying();
+                } 
+            }
+            function focusOnBoard() {
+                var c = document.getElementById("canvas");
+                c.focus();
+            }
+            function setHighest(score) {
+                var highestElem = document.getElementById("highest");
+                highestElem.innerHTML = score; 
+                setCookie("highest_" + username.toLowerCase(), score, 365); 
+            }
+            function getHighest() {
+                var highestCookie = getCookie("highest_" + username.toLowerCase());
+                if (highestCookie != null) {
+                    return parseInt(highestCookie);
+                }
+                return 0;
+            }
+            function setScore(level, score) {
+                var levelElem = document.getElementById("level");
+                var scoreElem = document.getElementById("score");
+                var currentScore = parseInt(scoreElem.innerHTML); 
+                if (score == 0 && currentScore > highestScore) {
+                    highestScore = currentScore; 
+                    setHighest(highestScore);
+                }
+                levelElem.innerHTML = level; 
+                scoreElem.innerHTML = score; 
+            }
+            function register(form) {
+                var name = form.name.value; 
+                if (!name) {
+                    alert("Please enter your name");
+                    form.name.focus();
+                    return;
+                }
+                setCookie("username", name, 365); 
+                username = name; 
+                beginPlaying(); 
+            }
+            function beginPlaying() {
+                highestScore = getHighest(); 
+                setHighest(highestScore);
+                var reg = document.getElementById("register");
+                var play = document.getElementById("play");
+                var uname = document.getElementById("username");
+                reg.style.display = 'none';
+                play.style.display = '';
+                uname.innerHTML = username;
+                focusOnBoard();
+            }
+            function signout() {
+                setCookie("username", "");
+                var reg = document.getElementById("register");
+                var play = document.getElementById("play");
+                reg.style.display = '';
+                play.style.display = 'none';
+            }
+        </script> 
+    </head>
+    <body onload="onload()">
+        <div class="header">
+            <div class="logo">Tetris</div> 
+            <ul class="navlinks">
+                <li><a href="#" onclick="signout()">Sign Out</a></li>
+            </ul> 
+        </div> 
+        <div style="clear:both;">&nbsp;</div> 
+        <div id="play" style="display:none;">
+            <div class="board">
+                <canvas data-processing-sources="pde/tetris.pde" id="canvas"></canvas>
+                <p class="note">Click on the board and use arrow keys to control the pieces.</p>
+            </div> 
+            <div class="scores">
+                <div class="greeting-panel">
+                    Hi, <span id="username"></span>
+                </div> 
+                <div class="score-panel">
+                    Level: <span id="level" class="score"></span>&nbsp;&nbsp;
+                    Score: <span id="score" class="score"></span>
+                </div> 
+                <div id="highest">0</div> 
+            </div> 
+        </div> 
+        <div id="register">
+            <h1>Welcome</h1>
+            <form id="regform" onsubmit="register(this); return false;"> 
+                <label for="name">Your Name</label>
+                <input id="name" name="name" type="text" />
+                <input type="submit" value="Enter" onclick="register(document.getElementById('regform')); return false;"/>
+            </form>
+        </div> 
+    </body>
+</html>
