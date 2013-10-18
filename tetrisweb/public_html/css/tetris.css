@@ -4,7 +4,7 @@ body {
     font-family: Arial,sans-serif;
 }
 .header {
-    height: 60px;
+    height: 40px;
     padding:0 20px;
     border-bottom: 1px solid #ccc;
 }
@@ -13,8 +13,8 @@ body {
 }
 .logo {
     float:left; 
-    height:60px; 
-    line-height:60px; 
+    height:40px; 
+    line-height:40px; 
     font-size:24px;
 }
 ul.navlinks {
@@ -24,14 +24,14 @@ ul.navlinks {
 }
 ul.navlinks li {
     display:inline-block;
-    line-height:60px; 
-    height:60px;
+    line-height:40px; 
+    height:40px;
 }
 .board {
     float:left; 
     width: 50%;
     text-align:center;
-    margin:20px 0;
+    margin:0;
 }
 .scores {
     float:left; 

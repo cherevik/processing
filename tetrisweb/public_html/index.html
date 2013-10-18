@@ -6,8 +6,10 @@
         <meta name="viewport" content="width=device-width">
         <link href="css/tetris.css" type="text/css" rel="stylesheet"/>
         <script src="js/processing-1.4.1.min.js"></script>  
+        <script src='https://cdn.firebase.com/v0/firebase.js'></script>        
         <script src="js/utils.js"></script>  
         <script> 
+            var dataRef = new Firebase("https://tetrishack.firebaseio.com");
             var highestScore = 0;
             var username = '';
             function onload() {
@@ -37,7 +39,7 @@
                 var levelElem = document.getElementById("level");
                 var scoreElem = document.getElementById("score");
                 var currentScore = parseInt(scoreElem.innerHTML); 
-                if (score == 0 && currentScore > highestScore) {
+                if (currentScore > highestScore) {
                     highestScore = currentScore; 
                     setHighest(highestScore);
                 }
