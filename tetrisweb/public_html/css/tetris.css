@@ -76,3 +76,10 @@ ul.navlinks li {
     width: 300px;
     margin: 60px auto;
 }
+#scorelist {
+    margin-top:60px;
+    text-align:center;
+}
+#scorelist p {
+    margin:0;
+}

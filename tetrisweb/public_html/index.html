@@ -9,13 +9,15 @@
         <script src='https://cdn.firebase.com/v0/firebase.js'></script>        
         <script src="js/utils.js"></script>  
         <script> 
-            var dataRef = new Firebase("https://tetrishack.firebaseio.com");
-            var highestScore = 0;
+            var dataRef = new Firebase("https://tetrishack.firebaseio.com/scorelist");
             var username = '';
+            var highestScore = 0;
+            var scores = new Array(); 
             function onload() {
                 var name = getCookie("username");
                 if (name) {
                     username = name; 
+                    readScores();
                     beginPlaying();
                 } 
             }
@@ -39,9 +41,14 @@
                 var levelElem = document.getElementById("level");
                 var scoreElem = document.getElementById("score");
                 var currentScore = parseInt(scoreElem.innerHTML); 
-                if (currentScore > highestScore) {
+                if (score == 0 && currentScore > highestScore) {
+                    // update the score in the UI 
                     highestScore = currentScore; 
                     setHighest(highestScore);
+                    
+                     // set the score in firebase 
+                    var record = dataRef.child(username); 
+                    record.setWithPriority({name: username, score: highestScore}, 100000 - highestScore);
                 }
                 levelElem.innerHTML = level; 
                 scoreElem.innerHTML = score; 
@@ -75,6 +82,37 @@
                 reg.style.display = '';
                 play.style.display = 'none';
             }
+            function readScores() {
+                var scoreQuery = dataRef.limit(100); 
+                scoreQuery.on("child_added", function(snapshot) {
+                    var record = snapshot.val(); 
+                    addScore(record); 
+                    displayScores();
+                });
+            }
+            function addScore(record) {
+                var i = 0; 
+                while (i < scores.length && record.score > scores[i].score) {
+                    i ++; 
+                }
+                if (i > 0 || scores.length < 20) {
+                    scores.splice(i, 0, record); 
+                    if (scores.length > 20) {
+                        scores.splice(0, 1); 
+                    }
+                }
+            }
+            function displayScores() {
+                var scoreList = document.getElementById("scorelist"); 
+                while (scoreList.firstChild) {
+                    scoreList.removeChild(scoreList.firstChild); 
+                }
+                for (var i = scores.length-1; i >= 0; i --) {
+                    var scoreElem = document.createElement("p");
+                    scoreElem.innerHTML = scores[i].name + ": " + scores[i].score; 
+                    scoreList.appendChild(scoreElem); 
+                }
+            }
         </script> 
     </head>
     <body onload="onload()">
@@ -99,6 +137,8 @@
                     Score: <span id="score" class="score"></span>
                 </div> 
                 <div id="highest">0</div> 
+                <div id="scorelist">
+                </div>
             </div> 
         </div> 
         <div id="register">
