@@ -10,6 +10,8 @@
         <script src="js/utils.js"></script>  
         <script> 
             var dataRef = new Firebase("https://tetrishack.firebaseio.com/scorelist");
+            var scoreQuery = dataRef.limit(100); 
+            var scoreRef; 
             var username = '';
             var highestScore = 0;
             var scores = new Array(); 
@@ -32,7 +34,7 @@
                 record.setWithPriority({name: username, score: score}, 100000 - highestScore);
             }
             function getHighest() {
-                var scoreRef = new Firebase("https://tetrishack.firebaseio.com/scorelist/" + username);
+                scoreRef = new Firebase("https://tetrishack.firebaseio.com/scorelist/" + username);
                 scoreRef.on('value', function(snapshot) {
                     highestScore = 0; 
                     if(snapshot.val() !== null) {
@@ -80,6 +82,8 @@
                 scores = new Array();
                 username = '';
                 highestScore = 0;
+                scoreRef.off();
+                scoreQuery.off();
                 setCookie("username", "");
                 var reg = document.getElementById("register");
                 var play = document.getElementById("play");
@@ -87,7 +91,7 @@
                 play.style.display = 'none';
             }
             function readScores() {
-                var scoreQuery = dataRef.limit(100); 
+                scoreQuery = dataRef.limit(100);
                 scoreQuery.on("child_added", function(snapshot) {
                     var record = snapshot.val(); 
                     addScore(record); 
