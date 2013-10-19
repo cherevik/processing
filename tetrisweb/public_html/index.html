@@ -18,8 +18,7 @@
             function onload() {
                 var name = getCookie("username");
                 if (name) {
-                    username = name; 
-                    beginPlaying();
+                    beginPlaying(name);
                 } 
             }
             function focusOnBoard() {
@@ -63,11 +62,11 @@
                     form.name.focus();
                     return;
                 }
-                setCookie("username", name, 365); 
-                username = name; 
-                beginPlaying(); 
+                beginPlaying(name); 
             }
-            function beginPlaying() {
+            function beginPlaying(name) {
+                username = name;
+                setCookie("username", name, 365); 
                 readScores();
                 getHighest(); 
                 var reg = document.getElementById("register");
