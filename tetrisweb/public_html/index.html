@@ -17,7 +17,6 @@
                 var name = getCookie("username");
                 if (name) {
                     username = name; 
-                    readScores();
                     beginPlaying();
                 } 
             }
@@ -67,6 +66,7 @@
                 beginPlaying(); 
             }
             function beginPlaying() {
+                readScores();
                 getHighest(); 
                 var reg = document.getElementById("register");
                 var play = document.getElementById("play");
